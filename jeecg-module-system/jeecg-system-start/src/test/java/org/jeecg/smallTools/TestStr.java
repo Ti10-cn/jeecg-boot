@@ -2,8 +2,14 @@ package org.jeecg.smallTools;
 
 import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.moudles.test.Service;
+import org.jeecg.moudles.test.SmyInfArrayBody;
 import org.junit.Test;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.Arrays;
 
@@ -50,6 +56,25 @@ public class TestStr {
         String sql = "select * from sys_user where sex = ${sex}";
         sql = sql.replaceAll("'?\\$\\{sex}'?","1");
         System.out.println(sql);
+    }
+
+
+    @Test
+    public void testXmlToObject() {
+        String str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><service><APP_HEAD></APP_HEAD><LOCAL_HEAD></LOCAL_HEAD><SYS_HEAD></SYS_HEAD><BODY><SmyDsc/><SmyInfArray><SmyCd>D510</SmyCd><SmyTp>BUSI</SmyTp></SmyInfArray><SmyInfArray><SmyCd>D511</SmyCd><SmyTp>BUSI</SmyTp></SmyInfArray><SmyInfArray><SmyCd>D512</SmyCd><SmyTp>BUSI</SmyTp></SmyInfArray></BODY></service>";
+        try {
+            JAXBContext jaxbContext;
+
+            jaxbContext = JAXBContext.newInstance(Service.class, SmyInfArrayBody.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            StringReader reader = new StringReader(str);
+            Service<SmyInfArrayBody> service = (Service<SmyInfArrayBody>) unmarshaller.unmarshal(reader);
+            for (SmyInfArrayBody.SmyInfArray smyInfArray : service.getBody().getSmyInfArray()) {
+                System.out.println(smyInfArray.getSmyCd());
+            }
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
     }
 
 }
